@@ -1,0 +1,30 @@
+<div class="m-3 form-group" data-action="change->live#update">
+
+    {{ form_start(this.form) }}
+
+        <div class="row m-3">
+                <div class="m-4">
+                        {{ form_row(this.form.currencyConversionFrom) }}
+                </div>
+                <div class="m-4">
+                        {{ form_row(this.form.currencyConversionTo) }}
+                </div>
+        </div>
+
+        <div class="m-4">
+                <div class="bg-white m-3">
+                        <div class="m-2">
+                                {{ form_errors(this.form) }}
+                        </div>
+                </div>
+
+                <button
+                        class="btn btn-primary m-3"
+                        data-action-name="debounce(1000)"
+                        data-loading="addAttribute(disabled)"
+                >{{ buttonLabel }}
+                </button>
+        </div>
+
+    {{ form_end(this.form) }}
+</div>

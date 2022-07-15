@@ -1,0 +1,24 @@
+{% extends 'currency_exchange/center_div.html.twig' %}
+
+{% block center_div %}
+
+    <table class="table table-sm table-dark table-primary m-3">
+        <thead>
+        <tr>
+            <th scope="col">From</th>
+            <th scope="col">To</th>
+            <th scope="col">Exchange Rate</th>
+        </tr>
+        </thead>
+        {% for currencyConversion in currencyConversions %}
+            <tbody class="mb-4">
+            <tr>
+                <td>{{ currencyConversion.currencyConversionFrom }}</td>
+                <td>{{ currencyConversion.currencyConversionTo }}</td>
+                <td>{{ currencyConversion.resultingExchangeRate }}</td>
+            </tr>
+            </tbody>
+        {% endfor %}
+    </table>
+
+{% endblock %}

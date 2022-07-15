@@ -2,7 +2,8 @@
 
 namespace App\Controller;
 
-use App\Form\CurrencyExchangeType;
+use App\Form\CurrencyExchangeOperationType;
+use App\Repository\CurrencyExchangeOperationRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -13,20 +14,20 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 class CurrencyExchangeController extends AbstractController
 {
     /**
-     * @Route("/instagram/users", name="app_instagram_index")
+     * @Route("/currency/index", name="app_currency_index")
      */
-    public function index(): Response
+    public function index(CurrencyExchangeOperationRepository $currencyExchangeOperationRepository): Response
     {
-        return $this->render('instagram_user_parser/index.html.twig', [
-            'users' => $instagramUserRepository->findAll(),
+        return $this->render('currency_exchange/index.html.twig', [
+            'currencyConversions' => $currencyExchangeOperationRepository->findAll(),
         ]);
     }
 
 
     /**
-     * @Route("/instagram/new", name="app_instagram_new")
+     * @Route("/currency/new", name="app_currency_new")
      */
-    public function parseInstagramUser
+    public function parseCurrencyExchangeOperation
     (
         Request                 $request,
         ParameterBagInterface   $parameterBag,
@@ -34,61 +35,48 @@ class CurrencyExchangeController extends AbstractController
     {
         $form = null;
         if ($request->isMethod('POST')) {
-            $form = $this->createForm(CurrencyExchangeType::class);
-
+            $form = $this->createForm(CurrencyExchangeOperationType::class);
             $form->handleRequest($request);
         }
 
         if ($form && $form->isSubmitted() && $form->isValid()) {
 
-            $instagramUserName = $form->getData()->getUsername();
-            $instagramUserInDatabase = $instagramUserRepository->findOne
-            (
-                'username',
-                    $instagramUserName,
-                '='
-            )[0] ?? null;
-
-            // if user exists redirect to table with data by id
-            if (!is_null($instagramUserInDatabase)) {
-                return $this->render('instagram_user_parser/index.html.twig', [
-                    'users' => [$instagramUserInDatabase],
-                ]);
-            }
+            $currencyConversionFrom = $form->getData()->getCurrencyConversionFrom();
+            $currencyConversionTo = $form->getData()->getCurrencyConversionTo();
 
 
-            // do stuff
-            // do stuff
-            // do stuff
-            // do stuff
+            ////////////// THIS NEEDS TO BE ITS OWN METHOD FOR API //////////////
 
-
-            // failed to parse
-            if ($instagramUser === false) {
-
-                // display error
-                return $this->renderForm('instagram_user_parser/new.html.twig', [
-                    'form' => $form,
-                    'failed_to_parse' => true
-                ]);
-            }
-
-            // display stufff
-            // display stufff
-            // display stufff
-            // display stufff
+            // get Currency Conversion data from yaml or if no yaml do api call
+            // use adapter for api
 
 
 
+            // get Exchange rate
+            $exchangeRate = 1.0;
 
-            return $this->render('instagram_user_parser/index.html.twig', [
-                'users' => [$instagramUser],
+
+
+            // calc $trend
+            $trend = null;
+
+            ////////////// THIS NEEDS TO BE ITS OWN METHOD FOR API //////////////
+
+
+
+            return $this->render('currency_exchange/index.html.twig', [
+                'currencyConversions' => [
+                    $currencyConversionFrom,
+                    $currencyConversionTo,
+                    $exchangeRate,
+                    $trend
+                ],
             ]);
         }
 
-        return $this->renderForm('instagram_user_parser/new.html.twig', [
+        return $this->renderForm('currency_exchange/new.html.twig', [
             'form' => $form,
-            'failed_to_parse' => false
+            'failed_to_exchange' => false
         ]);
     }
 }

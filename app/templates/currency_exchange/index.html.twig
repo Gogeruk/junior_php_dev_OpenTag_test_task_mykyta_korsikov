@@ -1,0 +1,10 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Parse index{% endblock %}
+
+{% block body %}
+    <a class="m-2" href="{{ path('app_currency_new') }}">Exchange Rate</a>
+
+    {{ include('currency_exchange/table.html.twig') }}
+
+{% endblock %}
