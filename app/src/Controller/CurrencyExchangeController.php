@@ -8,7 +8,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+use App\Currency\TrendService;
 
 
 class CurrencyExchangeController extends AbstractController
@@ -29,8 +29,8 @@ class CurrencyExchangeController extends AbstractController
      */
     public function parseCurrencyExchangeOperation
     (
-        Request                 $request,
-        ParameterBagInterface   $parameterBag,
+        Request      $request,
+        TrendService $trendService
     ): Response
     {
         $form = null;
@@ -45,11 +45,11 @@ class CurrencyExchangeController extends AbstractController
             $currencyConversionTo = $form->getData()->getCurrencyConversionTo();
 
 
+
             ////////////// THIS NEEDS TO BE ITS OWN METHOD FOR API //////////////
 
             // get Currency Conversion data from yaml or if no yaml do api call
             // use adapter for api
-
 
 
             // get Exchange rate
@@ -57,13 +57,16 @@ class CurrencyExchangeController extends AbstractController
 
 
 
-            // calc $trend
-            $trend = null;
+            // calc the trend
+            $trend = $trendService->getTrend($exchangeRate);
+
 
             ////////////// THIS NEEDS TO BE ITS OWN METHOD FOR API //////////////
 
 
 
+            // dont go to index
+            // make a unique display
             return $this->render('currency_exchange/index.html.twig', [
                 'currencyConversions' => [
                     $currencyConversionFrom,

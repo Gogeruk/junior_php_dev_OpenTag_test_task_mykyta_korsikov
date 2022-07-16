@@ -39,6 +39,28 @@ class CurrencyExchangeOperationRepository extends ServiceEntityRepository
         }
     }
 
+
+    /**
+     * @param int $limit
+     * @param string $orderBy
+     * @return array
+     */
+    public function getResultingExchangeRateWithLimit
+    (
+        int    $limit,
+        string $orderBy = 'DESC'
+    ): array
+    {
+        return $this->createQueryBuilder('c')
+            ->select('c.resultingExchangeRate')
+            ->setMaxResults($limit)
+            ->orderBy('c.id', $orderBy)
+            ->getQuery()
+            ->useQueryCache(false)
+            ->getResult();
+    }
+
+
 //    /**
 //     * @return CurrencyExchangeOperationType[] Returns an array of CurrencyExchangeOperationType objects
 //     */
