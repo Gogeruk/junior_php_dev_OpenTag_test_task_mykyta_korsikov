@@ -40,6 +40,7 @@ class SaveCurrencyExchangeOperation
         $currencyExchangeOperation->setResultingExchangeRate($exchangeRate);
         $currencyExchangeOperation->setTimestamp(new \DateTime());
 
+        $this->em->persist($currencyExchangeOperation);
         $this->em->flush();
         $this->em->clear();
     }

@@ -2,13 +2,13 @@
 
 namespace App\Controller;
 
+use App\API\Service\JsdelivrNetGhFawazahmedProcessor;
 use App\Form\CurrencyExchangeOperationType;
 use App\Repository\CurrencyExchangeOperationRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use App\Currency\TrendService;
 
 
 class CurrencyExchangeController extends AbstractController
@@ -29,8 +29,8 @@ class CurrencyExchangeController extends AbstractController
      */
     public function parseCurrencyExchangeOperation
     (
-        Request      $request,
-        TrendService $trendService
+        Request                          $request,
+        JsdelivrNetGhFawazahmedProcessor $jsdelivrNetGhFawazahmedProcessor
     ): Response
     {
         $form = null;
@@ -48,8 +48,22 @@ class CurrencyExchangeController extends AbstractController
 
             ////////////// THIS NEEDS TO BE ITS OWN METHOD FOR API //////////////
 
+            $trand = $jsdelivrNetGhFawazahmedProcessor->apiProcessor(
+                $currencyConversionFrom,
+                $currencyConversionTo,
+            );
 
-            var_dump($trend);
+            // works!!!!!
+
+            // create a proper api
+            // make cache ???
+            // make a ui for displaing new exchange rate
+            // tests
+
+
+
+
+            var_dump($trand);
             exit();
             ////////////// THIS NEEDS TO BE ITS OWN METHOD FOR API //////////////
 
