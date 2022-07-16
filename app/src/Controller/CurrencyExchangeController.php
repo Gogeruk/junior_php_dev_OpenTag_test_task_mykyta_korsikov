@@ -2,8 +2,11 @@
 
 namespace App\Controller;
 
+use App\API\Adapter\JsdelivrNetGhFawazahmedAdapter;
+use App\API\Service\JsdelivrNetGhFawazahmedService;
 use App\Form\CurrencyExchangeOperationType;
 use App\Repository\CurrencyExchangeOperationRepository;
+use App\RequestService\CustomRequestService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -41,19 +44,30 @@ class CurrencyExchangeController extends AbstractController
 
         if ($form && $form->isSubmitted() && $form->isValid()) {
 
-            $currencyConversionFrom = $form->getData()->getCurrencyConversionFrom();
-            $currencyConversionTo = $form->getData()->getCurrencyConversionTo();
+            $currencyConversionFrom = strtolower($form->getData()->getCurrencyConversionFrom());
+            $currencyConversionTo = strtolower($form->getData()->getCurrencyConversionTo());
 
 
 
             ////////////// THIS NEEDS TO BE ITS OWN METHOD FOR API //////////////
 
-            // get Currency Conversion data from yaml or if no yaml do api call
-            // use adapter for api
+            // check if exchange rate is stored in cache
+
+            // no?
+            // get exchange rate from api
+            $exchange = new JsdelivrNetGhFawazahmedAdapter(
+                new JsdelivrNetGhFawazahmedService(
+                    new CustomRequestService()
+                )
+            );
+
+            $exchangeRate = $exchange->exchange($currencyConversionFrom, $currencyConversionTo)[$currencyConversionTo];
 
 
-            // get Exchange rate
-            $exchangeRate = 1.0;
+            // cache array data for an hour
+
+
+            // save data to db
 
 
 
@@ -61,6 +75,8 @@ class CurrencyExchangeController extends AbstractController
             $trend = $trendService->getTrend($exchangeRate);
 
 
+            var_dump($trend);
+            exit();
             ////////////// THIS NEEDS TO BE ITS OWN METHOD FOR API //////////////
 
 
