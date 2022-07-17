@@ -72,24 +72,26 @@ class JsdelivrNetGhFawazahmedProcessor
             new FilesystemAdapter()
         );
         $exchangeRate = $cache->getItem('stats.exchange_rate')->get();
+        $expirationDate = $cache->getItem('stats.expiration_date')->get();
+        $now = new \DateTime();
 
-        // does cache exchange rate exist?
-        if (!is_float($exchangeRate)) {
-
+        // does cache exchange rate exist and is it expireD?
+        if (
+            !is_float($exchangeRate) && $exchangeRate !== 1 or
+            clone $now > $expirationDate
+        ) {
             // get exchange rate from api
             $exchange = new JsdelivrNetGhFawazahmedAdapter($this->jsdelivrNetGhFawazahmedService);
             $exchangeRate = $exchange->exchange($currencyConversionFrom, $currencyConversionTo)[$currencyConversionTo];
 
             // save new cache
+            $expirationDate = (clone $now)->add(new \DateInterval("PT1H")); // in 1 hour
+
             $exchangeRateValues = [
-                'stats.exchange_rate' => $exchangeRate,
+                'stats.exchange_rate'   => $exchangeRate,
+                'stats.expiration_date' => $expirationDate,
             ];
             $cache->warmUp($exchangeRateValues);
-
-            // set cache expiration date
-            $now = new \DateTime();
-            $inOneHour = (clone $now)->add(new \DateInterval("PT1H"));
-            $cache->getItem('stats.exchange_rate')->expiresAt($inOneHour);
         }
 
         // save data to db for trend
