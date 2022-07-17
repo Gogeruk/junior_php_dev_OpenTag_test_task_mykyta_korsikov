@@ -7,11 +7,19 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Validator\Constraints\Currency;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 
 class CurrencyExchangeAPIController extends AbstractController
 {
+    /**
+     * @param ValidatorInterface $validator
+     */
+    public function __construct(ValidatorInterface $validator) {
+        $this->validator = $validator;
+    }
+
     /**
      * @Route("/api/currency/new", name="app_api_currency_new")
      */
@@ -24,6 +32,16 @@ class CurrencyExchangeAPIController extends AbstractController
         $response = new Response();
         if ($request->isMethod('POST')) {
             $parameters = json_decode($request->getContent(), true);
+
+            $constraints = new Assert\Collection([
+                'from' => [new Assert\Currency(), new Assert\NotBlank()],
+                'to' => [new Assert\Currency(), new Assert\NotBlank()],
+            ]);
+
+            $validationResult = $this->validator->validate($parameters, $constraints);
+            if ($validationResult->count() !== 0) {
+                return $response->setContent($validationResult);
+            }
 
             list($exchangeRate, $trend) = $jsdelivrNetGhFawazahmedProcessor->apiProcessor(
                 strtolower($parameters['from']),
