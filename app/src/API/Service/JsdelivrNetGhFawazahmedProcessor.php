@@ -75,7 +75,7 @@ class JsdelivrNetGhFawazahmedProcessor
         $expirationDate = $cache->getItem('stats.expiration_date')->get();
         $now = new \DateTime();
 
-        // does cache exchange rate exist and is it expireD?
+        // does cache exchange rate exist or did it expire?
         if (
             !is_float($exchangeRate) && $exchangeRate !== 1 or
             clone $now > $expirationDate
