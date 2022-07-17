@@ -36,7 +36,7 @@ class TrendService
             ->getResultingExchangeRateWithLimit($scope)
         ;
 
-        // less rows in db than scope
+        // fewer rows in db than scope
         if (count($currencyScope) < $scope) {
             return null;
         }

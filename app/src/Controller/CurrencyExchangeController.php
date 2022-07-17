@@ -44,39 +44,31 @@ class CurrencyExchangeController extends AbstractController
             $currencyConversionFrom = strtolower($form->getData()->getCurrencyConversionFrom());
             $currencyConversionTo = strtolower($form->getData()->getCurrencyConversionTo());
 
-
-
-            ////////////// THIS NEEDS TO BE ITS OWN METHOD FOR API //////////////
-
-            $trand = $jsdelivrNetGhFawazahmedProcessor->apiProcessor(
+            list($exchangeRate, $trend) = $jsdelivrNetGhFawazahmedProcessor->apiProcessor(
                 $currencyConversionFrom,
                 $currencyConversionTo,
             );
 
-            // works!!!!!
 
+
+            // 2.
+            // make cache
+
+            // 3.
             // create a proper api
-            // make cache ???
-            // make a ui for displaing new exchange rate
+
+            // 4.
             // tests
 
 
 
-
-            var_dump($trand);
-            exit();
-            ////////////// THIS NEEDS TO BE ITS OWN METHOD FOR API //////////////
-
-
-
-            // dont go to index
-            // make a unique display
-            return $this->render('currency_exchange/index.html.twig', [
-                'currencyConversions' => [
-                    $currencyConversionFrom,
-                    $currencyConversionTo,
-                    $exchangeRate,
-                    $trend
+            // display
+            return $this->render('currency_exchange/display_new_exchange_result.html.twig', [
+                'currencyConversion' => [
+                    'currencyConversionFrom' => $currencyConversionFrom,
+                    'currencyConversionTo' => $currencyConversionTo,
+                    'exchangeRate' => $exchangeRate,
+                    'trend' => $trend,
                 ],
             ]);
         }

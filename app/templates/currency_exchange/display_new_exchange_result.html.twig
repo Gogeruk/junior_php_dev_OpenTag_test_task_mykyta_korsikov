@@ -1,0 +1,25 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <a class="m-2" href="{{ path('app_currency_index') }}">Failed to Exchange</a>
+
+    <div class="container mb-3">
+        <div class="row m-3">
+            <div class="col-sm m-3">
+                <h4 class="m-3">
+                    THE CONVERSION RATE OF
+                    {{ currencyConversion.currencyConversionFrom }}
+                    TO
+                    {{ currencyConversion.currencyConversionTo }}
+                    IS
+                    {{ currencyConversion.exchangeRate }}
+                    WITH A TREND OF
+                    {{ currencyConversion.trend }}
+                </h4>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+

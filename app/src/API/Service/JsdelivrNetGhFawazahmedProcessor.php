@@ -44,13 +44,13 @@ class JsdelivrNetGhFawazahmedProcessor
     /**
      * @param string $currencyConversionFrom
      * @param string $currencyConversionTo
-     * @return string
+     * @return array
      */
     public function apiProcessor
     (
         string $currencyConversionFrom,
         string $currencyConversionTo
-    )
+    ) : array
     {
 
         // !!!!
@@ -81,7 +81,7 @@ class JsdelivrNetGhFawazahmedProcessor
         $trend = $this->trendService->getTrend($exchangeRate);
 
 
-        return $exchangeRate . ' ' . $trend;
+        return [$exchangeRate, $trend];
     }
 
 
