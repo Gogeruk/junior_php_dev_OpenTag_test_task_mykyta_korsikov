@@ -4,6 +4,10 @@ namespace App\API\Service;
 
 use App\API\Adapter\JsdelivrNetGhFawazahmedAdapter;
 use App\Currency\TrendService;
+use Symfony\Component\Cache\Adapter\FilesystemAdapter;
+use Symfony\Component\Cache\Adapter\PhpArrayAdapter;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+
 
 class JsdelivrNetGhFawazahmedProcessor
 {
@@ -18,6 +22,11 @@ class JsdelivrNetGhFawazahmedProcessor
     public $jsdelivrNetGhFawazahmedService;
 
     /**
+     * @var ParameterBagInterface
+     */
+    public $parameterBag;
+
+    /**
      * @var TrendService
      */
     public $trendService;
@@ -26,17 +35,20 @@ class JsdelivrNetGhFawazahmedProcessor
     /**
      * @param SaveCurrencyExchangeOperation $saveCurrencyExchangeOperation
      * @param JsdelivrNetGhFawazahmedService $jsdelivrNetGhFawazahmedService
+     * @param ParameterBagInterface $parameterBag
      * @param TrendService $trendService
      */
     public function __construct
     (
         SaveCurrencyExchangeOperation  $saveCurrencyExchangeOperation,
         JsdelivrNetGhFawazahmedService $jsdelivrNetGhFawazahmedService,
+        ParameterBagInterface          $parameterBag,
         TrendService                   $trendService
     )
     {
         $this->saveCurrencyExchangeOperation = $saveCurrencyExchangeOperation;
         $this->jsdelivrNetGhFawazahmedService = $jsdelivrNetGhFawazahmedService;
+        $this->parameterBag = $parameterBag;
         $this->trendService = $trendService;
     }
 
@@ -45,6 +57,7 @@ class JsdelivrNetGhFawazahmedProcessor
      * @param string $currencyConversionFrom
      * @param string $currencyConversionTo
      * @return array
+     * @throws \Psr\Cache\InvalidArgumentException
      */
     public function apiProcessor
     (
@@ -52,39 +65,43 @@ class JsdelivrNetGhFawazahmedProcessor
         string $currencyConversionTo
     ) : array
     {
+        // get cache
+        $cacheFileName = $currencyConversionFrom . '_' . $currencyConversionTo . '.cache';
+        $cache = new PhpArrayAdapter(
+            $this->parameterBag->get('kernel.project_dir') . '/cache/'. $cacheFileName,
+            new FilesystemAdapter()
+        );
+        $exchangeRate = $cache->getItem('stats.exchange_rate')->get();
 
-        // !!!!
-        // check if exchange rate is stored in cache
-
-
-        // no?
-        if (true) {
+        // does cache exchange rate exist?
+        if (!is_float($exchangeRate)) {
 
             // get exchange rate from api
             $exchange = new JsdelivrNetGhFawazahmedAdapter($this->jsdelivrNetGhFawazahmedService);
             $exchangeRate = $exchange->exchange($currencyConversionFrom, $currencyConversionTo)[$currencyConversionTo];
 
-            // !!!!
-            // cache array data for an hour
+            // save new cache
+            $exchangeRateValues = [
+                'stats.exchange_rate' => $exchangeRate,
+            ];
+            $cache->warmUp($exchangeRateValues);
 
-
-            // save data to db
-            $this->saveCurrencyExchangeOperation->save(
-                $currencyConversionFrom,
-                $currencyConversionTo,
-                $exchangeRate
-            );
+            // set cache expiration date
+            $now = new \DateTime();
+            $inOneHour = (clone $now)->add(new \DateInterval("PT1H"));
+            $cache->getItem('stats.exchange_rate')->expiresAt($inOneHour);
         }
 
+        // save data to db for trend
+        $this->saveCurrencyExchangeOperation->save(
+            $currencyConversionFrom,
+            $currencyConversionTo,
+            $exchangeRate
+        );
 
         // calc the trend
         $trend = $this->trendService->getTrend($exchangeRate);
 
-
         return [$exchangeRate, $trend];
     }
-
-
-
-
 }

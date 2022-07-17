@@ -49,11 +49,6 @@ class CurrencyExchangeController extends AbstractController
                 $currencyConversionTo,
             );
 
-
-
-            // 2.
-            // make cache
-
             // 3.
             // create a proper api
 
