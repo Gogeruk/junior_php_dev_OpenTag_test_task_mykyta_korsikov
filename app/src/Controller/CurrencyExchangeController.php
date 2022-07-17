@@ -49,14 +49,6 @@ class CurrencyExchangeController extends AbstractController
                 $currencyConversionTo,
             );
 
-            // 3.
-            // create a proper api
-
-            // 4.
-            // tests
-
-
-
             // display
             return $this->render('currency_exchange/display_new_exchange_result.html.twig', [
                 'currencyConversion' => [
