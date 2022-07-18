@@ -2,7 +2,7 @@
 
 {% block center_div %}
     {% if failed_to_exchange %}
-        <a class="m-2" href="{{ path('app_currency_index') }}">Failed to Exchange</a>
+        <a class="m-2" href="{{ path('app_currency_index') }}">Back to The List</a>
     {% else %}
         {{ component('currency_exchange_form', {
             form: form
