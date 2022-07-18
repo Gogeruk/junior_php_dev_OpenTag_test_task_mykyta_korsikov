@@ -3,6 +3,7 @@
 namespace App\API\Service;
 
 use App\API\Adapter\JsdelivrNetGhFawazahmedAdapter;
+use App\Currency\SaveCurrencyExchangeOperation;
 use App\Currency\TrendService;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Symfony\Component\Cache\Adapter\PhpArrayAdapter;
@@ -94,15 +95,15 @@ class JsdelivrNetGhFawazahmedProcessor
             $cache->warmUp($exchangeRateValues);
         }
 
+        // calc the trend
+        $trend = $this->trendService->getTrend($exchangeRate);
+
         // save data to db for trend
         $this->saveCurrencyExchangeOperation->save(
             $currencyConversionFrom,
             $currencyConversionTo,
             $exchangeRate
         );
-
-        // calc the trend
-        $trend = $this->trendService->getTrend($exchangeRate);
 
         return [$exchangeRate, $trend];
     }

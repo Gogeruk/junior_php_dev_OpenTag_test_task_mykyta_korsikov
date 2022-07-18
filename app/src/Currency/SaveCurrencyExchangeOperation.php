@@ -1,6 +1,6 @@
 <?php
 
-namespace App\API\Service;
+namespace App\Currency;
 
 use App\Entity\CurrencyExchangeOperation;
 use Doctrine\ORM\EntityManagerInterface;
